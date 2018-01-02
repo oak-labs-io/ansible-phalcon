@@ -1,2 +1,48 @@
 ---
-# tasks file for oaklabs.phalcon
+
+- name: Clone Phalcon
+  git:
+    repo: https://github.com/phalcon/cphalcon.git
+    dest: /tmp/phalcon
+    accept_hostkey: true
+    force: yes
+    update: true
+
+- name: Checkout required version, is set
+  shell: >
+    git checkout v"{{ phalcon_version }}"
+    chdir=/tmp/phalcon/build
+  when: phalcon_version is defined
+
+- name: Install Phalcon
+  shell: >
+    ./install
+    chdir=/tmp/phalcon/build
+
+- name: Get PHP Version
+  shell: php --version | grep -o '^PHP [[:digit:]]\.[[:digit:]]' | awk '{ print $NF }'
+  register: phpversion
+  failed_when: false
+  changed_when: false
+
+- name: Get PHP extension folder
+  shell: php --info | grep -E "^extension_dir" | sed "s/.*=>\s*\(.*\)\+/\1/"
+  register: extensionfolder
+  failed_when: false
+  changed_when: false
+
+- stat: path="/etc/php/{{ phpversion.stdout }}/mods-available"
+  register: phalcon_template
+
+- name: Copy phalcon.ini template
+  template:
+    src: "phalcon.ini"
+    dest: "/etc/php/{{ phpversion.stdout }}/mods-available"
+    owner: root
+    group: root
+    mode: a+r
+  when: phalcon_template.stat.exists == False
+
+- name: Enable Phalcon mod
+  shell: >
+    phpenmod phalcon
