@@ -31,7 +31,7 @@
   failed_when: false
   changed_when: false
 
-- stat: path="/etc/php/{{ phpversion.stdout }}/mods-available"
+- stat: path="/etc/php/{{ phpversion.stdout }}/mods-available/phalcon.ini"
   register: phalcon_template
 
 - name: Copy phalcon.ini template
