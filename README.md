@@ -11,7 +11,7 @@ PHP needs to be already installed, as well as git.
 Role Variables
 --------------
 
-- phalcon_version: (optional) Specify Phalcon version. If not set, it installs latest version on repository.
+- phalcon_version: (optional) Specify Phalcon version. If not set, it installs latest version on repository. Example: `3.3.0`.
 
 Example Playbook
 ----------------
@@ -47,6 +47,11 @@ Example Playbook
       command: php -r 'echo Phalcon\Version::get() . "\n";'
       changed_when: false
 ```
+
+Testing
+-------
+
+Just run `vagrant up`.
 
 License
 -------

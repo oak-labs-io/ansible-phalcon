@@ -8,10 +8,9 @@
     force: yes
     update: true
 
-- name: Checkout required version, is set
+- name: Checkout required version, if set
   shell: >
     git checkout v{{ phalcon_version }}
-    chdir=/tmp/phalcon/build
   when: phalcon_version is defined
 
 - name: Install Phalcon
