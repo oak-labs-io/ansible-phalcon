@@ -10,7 +10,7 @@
 
 - name: Checkout required version, is set
   shell: >
-    git checkout v"{{ phalcon_version }}"
+    git checkout v{{ phalcon_version }}
     chdir=/tmp/phalcon/build
   when: phalcon_version is defined
 
