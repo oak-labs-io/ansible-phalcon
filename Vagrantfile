@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
       m.vm.box = opts[:box]
       m.vm.provider "virtualbox" do |v|
         v.cpus = 1
-        v.memory = 512
+        v.memory = 2048
       end
       m.vm.provision "ansible" do |ansible|
         ansible.playbook = "tests/test.yml"
