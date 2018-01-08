@@ -1,5 +1,10 @@
 ---
 
+- name: Clean temporary folder
+  file:
+    path: /tmp/phalcon
+    state: absent
+
 - name: Clone Phalcon
   git:
     repo: https://github.com/phalcon/cphalcon.git
@@ -11,6 +16,7 @@
 - name: Checkout required version, if set
   shell: >
     git checkout v{{ phalcon_version }}
+    chdir=/tmp/phalcon
   when: phalcon_version is defined
 
 - name: Install Phalcon
