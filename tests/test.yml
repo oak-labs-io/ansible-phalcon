@@ -1,22 +1,62 @@
 ---
 - hosts: all
   remote_user: root
+  vars:
+      php_enable_webserver: false
+      php_packages:
+        - php
+        - php-cli
+        - php-dev
 
   pre_tasks:
   - name: Update apt cache if needed
     apt: update_cache=yes cache_valid_time=3600
 
-  - name: Install git
+  - name: Remove existing versions of php
     apt:
-      name: git
+      name: "{{ item }}"
+      state: absent
       update_cache: yes
+    with_items:
+      - php*
 
-  - name: Install php-config
+  - name: Install needed base packages
     apt:
-      name: php-dev
+      name: "{{ item }}"
+      state: present
       update_cache: yes
+    with_items:
+      - apt-transport-https
+      - git
+
+  - name: Add ondrej repository for later versions of PHP
+    apt_repository: repo='ppa:ondrej/php' update_cache=yes
+    when: ansible_distribution == 'Ubuntu'
+
+  - name: Get https://deb.sury.org/ GPG Key
+    get_url:
+      url: https://packages.sury.org/php/apt.gpg
+      dest: /etc/apt/trusted.gpg.d/php.gpg
+      mode: 0444
+    when: ansible_distribution == 'Debian'
+
+  - name: Get SO version name
+    command: "lsb_release -cs"
+    register: version
+    changed_when: false
+    when: ansible_distribution == 'Debian'
+
+  - name: Install https://deb.sury.org/ repo for later versions of PHP
+    apt_repository:
+      repo: "{{ item }}"
+      state: present
+      filename: 'php'
+    with_items:
+      - deb https://packages.sury.org/php/ {{ version.stdout }} main
+    when: ansible_distribution == 'Debian'
 
   roles:
+    - geerlingguy.php
     - ../../
 
   post_tasks:
